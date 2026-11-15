@@ -47,17 +47,12 @@ void Melee20Button::UpdateDigitalOutputs(const InputState &inputs, OutputState &
 }
 
 void Melee20Button::UpdateAnalogOutputs(const InputState &inputs, OutputState &outputs) {
-    // Rotary encoder detent pulses (virtual buttons, see config/pico/config.cpp). A pulse takes
-    // priority over a held opposite direction. Modifiers still apply to it.
-    bool encoder_up = inputs.lt7;
-    bool encoder_down = inputs.lt8;
-
     // Coordinate calculations to make modifier handling simpler.
     UpdateDirections(
         inputs.lf3, // Left
         inputs.lf1, // Right
-        (inputs.lf2 && !encoder_up) || encoder_down, // Down
-        (inputs.rf4 && !encoder_down) || encoder_up, // Up
+        inputs.lf2, // Down
+        inputs.rf4, // Up
         inputs.rt3, // C-Left
         inputs.rt5, // C-Right
         inputs.rt2, // C-Down

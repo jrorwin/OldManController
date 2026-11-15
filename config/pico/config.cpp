@@ -67,7 +67,8 @@ const DpadModConfig dpad_mod = {
 const uint encoder_pin_a = 8; // CLK
 const uint encoder_pin_b = 9; // DT
 // Virtual buttons asserted for one clockwise/counter-clockwise detent. No config maps LT7/LT8 to a
-// physical button. Melee20Button turns these into left stick up/down pulses.
+// physical button. ControllerMode turns them into left stick up/down pulses in every mode (see
+// encoder_stick below).
 const Button encoder_cw_button = BTN_LT7;
 const Button encoder_ccw_button = BTN_LT8;
 // Pulse timing on joybus (GameCube/N64), counted in console polls: hold the press for
@@ -84,6 +85,13 @@ const int32_t encoder_max_pending = 4;
 const int32_t encoder_transitions_per_detent = 2;
 // Swap this if clockwise comes out as counter-clockwise.
 const bool encoder_reverse = false;
+
+// Clockwise = left stick up, counter-clockwise = left stick down (D-pad Up/Down while the D-pad mod
+// is held), in every controller mode.
+const EncoderStickConfig encoder_stick = {
+    .up = encoder_cw_button,
+    .down = encoder_ccw_button,
+};
 
 RotaryEncoderInput encoder_input(
     encoder_pin_a,
@@ -136,6 +144,7 @@ void setup() {
     }
 
     ControllerMode::SetDpadMod(dpad_mod);
+    ControllerMode::SetEncoderStick(encoder_stick);
 
     // Create array of input sources to be used.
     // The encoder is FAST so the backend calls it once per poll, but it only counts polls there.

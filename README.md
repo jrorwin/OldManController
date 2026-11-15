@@ -18,7 +18,7 @@ It's for PC testing only. Don't use it on a console.
 
 | Feature | Details |
 |---|---|
-| Rotary encoder | CLK = GP8, DT = GP9, `+` = 3V3, GND = GND. Each clockwise click pulses left stick **up**, each counter-clockwise click pulses left stick **down** (Melee mode). |
+| Rotary encoder | CLK = GP8, DT = GP9, `+` = 3V3, GND = GND. Each clockwise click pulses left stick **up**, each counter-clockwise click pulses left stick **down**, in every controller mode (at that mode's full deflection). While the D-pad mod is held, clicks press D-pad up/down instead. |
 | D-pad mod | Hold the knob press (GP1, physical pin 2) and the four left stick buttons become a D-pad, in every controller mode. |
 | Everything else | Same pins, buttons, modes, Mod X/Mod Y, USB support and mode-switch combos as stock HayBox. |
 
