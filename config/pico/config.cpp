@@ -67,8 +67,9 @@ const uint32_t encoder_pulse_ms = 20;
 const uint32_t encoder_gap_ms = 20;
 // Most detents that can be queued, so a fast spin doesn't leave a long tail of presses.
 const int32_t encoder_max_pending = 4;
-// Quadrature transitions per detent (one full cycle on a typical KY-040).
-const int32_t encoder_transitions_per_detent = 4;
+// Quadrature transitions per detent. This KY-040 does half a quadrature cycle per detent (2);
+// use 4 for encoders that do a full cycle per detent.
+const int32_t encoder_transitions_per_detent = 2;
 // Swap this if clockwise comes out as counter-clockwise.
 const bool encoder_reverse = false;
 
