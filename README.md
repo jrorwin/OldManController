@@ -1,3 +1,45 @@
+# OldManController
+
+A [HayBox](https://github.com/JonnyHaystack/HayBox) build for a Raspberry Pi Pico box controller,
+with a KY-040 rotary encoder. It works on GameCube/Wii (through the GCC cable) and over USB.
+
+## Flashing
+
+1. Download or pull this repo. The ready-to-flash firmware is in [`firmware/`](firmware/).
+2. Hold BOOTSEL on the Pico and plug it into a PC over USB. A drive called `RPI-RP2` appears.
+3. Drag `firmware/haybox-pico-encoder.uf2` onto that drive. The Pico reboots by itself.
+
+To reflash later, you can also hold the GP15 button (C-Down) while plugging in.
+
+`firmware/haybox-pico-encoder-DEBUG.uf2` prints the encoder's readings over USB serial (115200).
+It's for PC testing only. Don't use it on a console.
+
+## What's different from stock HayBox
+
+| Feature | Details |
+|---|---|
+| Rotary encoder | CLK = GP8, DT = GP9, `+` = 3V3, GND = GND. Each clockwise click pulses left stick **up**, each counter-clockwise click pulses left stick **down** (Melee mode). |
+| D-pad mod | Hold the knob press (GP1, physical pin 2) and the four left stick buttons become a D-pad, in every controller mode. |
+| Everything else | Same pins, buttons, modes, Mod X/Mod Y, USB support and mode-switch combos as stock HayBox. |
+
+Settings are near the top of [`config/pico/config.cpp`](config/pico/config.cpp):
+
+- `encoder_pulse_polls` / `encoder_gap_polls`: how long each click is held/released on GameCube/Wii, in console polls (default 2/2).
+- `encoder_pulse_ms` / `encoder_gap_ms`: the same over USB, in milliseconds (default 20/20).
+- `encoder_max_pending`: how many queued clicks to keep after a fast spin (default 4).
+- `encoder_transitions_per_detent`: 2 for this encoder. Use 4 if your encoder needs two clicks per step.
+- `encoder_reverse`: swap the turning direction.
+- `dpad_mod`: which button is the D-pad mod and which buttons become the D-pad.
+
+## Building it yourself
+
+Install [PlatformIO](https://platformio.org/) and run `pio run -e pico` (or `-e pico_encoder_debug`).
+The firmware ends up in `.pio/build/<env>/firmware.uf2`.
+
+---
+
+The original HayBox README follows.
+
 # HayBox
 
 HayBox is a modular, cross-platform firmware for digital or mixed analog/digital controllers, primarily targeted at [B0XX](https://b0xx.com)-style controllers.
