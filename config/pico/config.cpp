@@ -1,6 +1,7 @@
 #include "comms/backend_init.hpp"
 #include "config_defaults.hpp"
 #include "core/CommunicationBackend.hpp"
+#include "core/ControllerMode.hpp"
 #include "core/KeyboardMode.hpp"
 #include "core/Persistence.hpp"
 #include "core/mode_selection.hpp"
@@ -50,8 +51,19 @@ const size_t button_count = sizeof(button_mappings) / sizeof(GpioButtonMapping);
 
 DebouncedGpioButtonInput<button_count> gpio_input(button_mappings);
 
+/* D-pad mod: hold the knob press (GP1, BTN_LF5) to turn the left stick buttons into a D-pad, in
+ * every controller mode. */
+const DpadModConfig dpad_mod = {
+    .modifier = BTN_LF5,
+    .left = BTN_LF3,
+    .right = BTN_LF1,
+    .down = BTN_LF2,
+    .up = BTN_RF4,
+};
+
 /* Rotary encoder (KY-040). CLK/DT must be consecutive GPIOs (PIO requirement). The knob's push
- * switch is the BTN_LF5 mapping on GP1 above and is debounced like every other button. */
+ * switch is the BTN_LF5 mapping on GP1 above (the D-pad mod) and is debounced like every other
+ * button. */
 const uint encoder_pin_a = 8; // CLK
 const uint encoder_pin_b = 9; // DT
 // Virtual buttons asserted for one clockwise/counter-clockwise detent. No config maps LT7/LT8 to a
@@ -122,6 +134,8 @@ void setup() {
     if (!persistence.LoadConfig(config)) {
         persistence.SaveConfig(config);
     }
+
+    ControllerMode::SetDpadMod(dpad_mod);
 
     // Create array of input sources to be used.
     // The encoder is FAST so the backend calls it once per poll, but it only counts polls there.

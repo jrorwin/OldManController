@@ -1,18 +1,63 @@
 #include "core/ControllerMode.hpp"
 
+#include "util/state_util.hpp"
+
+DpadModConfig ControllerMode::_dpad_mod = {
+    .modifier = BTN_UNSPECIFIED,
+    .left = BTN_UNSPECIFIED,
+    .right = BTN_UNSPECIFIED,
+    .down = BTN_UNSPECIFIED,
+    .up = BTN_UNSPECIFIED,
+};
+
 ControllerMode::ControllerMode() : InputMode() {
     // Set up initial state.
     ResetDirections();
 }
 
+void ControllerMode::SetDpadMod(const DpadModConfig &dpad_mod) {
+    _dpad_mod = dpad_mod;
+}
+
 void ControllerMode::UpdateOutputs(const InputState &inputs, OutputState &outputs) {
+    // D-pad mod works on the physical buttons, before remapping, SOCD and mode logic, so it behaves
+    // the same in every mode. The modifier itself is never passed on to the mode.
+    InputState physical_inputs = inputs;
+    bool dpad_left = false;
+    bool dpad_right = false;
+    bool dpad_down = false;
+    bool dpad_up = false;
+    if (_dpad_mod.modifier != BTN_UNSPECIFIED) {
+        if (get_button(physical_inputs.buttons, _dpad_mod.modifier)) {
+            dpad_left = get_button(physical_inputs.buttons, _dpad_mod.left);
+            dpad_right = get_button(physical_inputs.buttons, _dpad_mod.right);
+            dpad_down = get_button(physical_inputs.buttons, _dpad_mod.down);
+            dpad_up = get_button(physical_inputs.buttons, _dpad_mod.up);
+            set_button(physical_inputs.buttons, _dpad_mod.left, false);
+            set_button(physical_inputs.buttons, _dpad_mod.right, false);
+            set_button(physical_inputs.buttons, _dpad_mod.down, false);
+            set_button(physical_inputs.buttons, _dpad_mod.up, false);
+        }
+        set_button(physical_inputs.buttons, _dpad_mod.modifier, false);
+    }
+
     // Create a copy of the input state here so remapping can be many-to-one (many physical buttons
     // to one activated button).
-    InputState remapped_inputs = inputs;
-    HandleRemap(inputs, remapped_inputs);
+    InputState remapped_inputs = physical_inputs;
+    HandleRemap(physical_inputs, remapped_inputs);
     HandleSocd(remapped_inputs);
     UpdateDigitalOutputs(remapped_inputs, outputs);
     UpdateAnalogOutputs(remapped_inputs, outputs);
+
+    // Opposite D-pad directions cancel out.
+    if (dpad_left != dpad_right) {
+        outputs.dpadLeft = outputs.dpadLeft || dpad_left;
+        outputs.dpadRight = outputs.dpadRight || dpad_right;
+    }
+    if (dpad_down != dpad_up) {
+        outputs.dpadDown = outputs.dpadDown || dpad_down;
+        outputs.dpadUp = outputs.dpadUp || dpad_up;
+    }
 }
 
 void ControllerMode::ResetDirections() {
