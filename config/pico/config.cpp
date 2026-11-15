@@ -71,12 +71,14 @@ const uint encoder_pin_b = 9; // DT
 // encoder_stick below).
 const Button encoder_cw_button = BTN_LT7;
 const Button encoder_ccw_button = BTN_LT8;
-// Pulse timing on joybus (GameCube/N64), counted in console polls: hold the press for
-// encoder_pulse_polls polls, then keep it released for at least encoder_gap_polls polls.
-const uint32_t encoder_pulse_polls = 2;
+// Pulse timing on joybus (GameCube/N64), counted in console polls (one per frame in most games, so
+// 3 = 3 frames at 60fps): hold the press for encoder_pulse_polls polls, then keep it released for
+// at least encoder_gap_polls polls.
+const uint32_t encoder_pulse_polls = 3;
 const uint32_t encoder_gap_polls = 2;
 // Pulse timing on USB backends (they report at ~1kHz, so polls can't be used), in milliseconds.
-const uint32_t encoder_pulse_ms = 20;
+// 50ms = 3 frames at 60fps.
+const uint32_t encoder_pulse_ms = 50;
 const uint32_t encoder_gap_ms = 20;
 // Most detents that can be queued, so a fast spin doesn't leave a long tail of presses.
 const int32_t encoder_max_pending = 4;

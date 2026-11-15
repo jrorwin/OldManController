@@ -24,8 +24,8 @@ It's for PC testing only. Don't use it on a console.
 
 Settings are near the top of [`config/pico/config.cpp`](config/pico/config.cpp):
 
-- `encoder_pulse_polls` / `encoder_gap_polls`: how long each click is held/released on GameCube/Wii, in console polls (default 2/2).
-- `encoder_pulse_ms` / `encoder_gap_ms`: the same over USB, in milliseconds (default 20/20).
+- `encoder_pulse_polls` / `encoder_gap_polls`: how long each click is held/released on GameCube/Wii, in console polls (default 3/2, i.e. 3 frames held).
+- `encoder_pulse_ms` / `encoder_gap_ms`: the same over USB, in milliseconds (default 50/20, i.e. 3 frames held at 60fps).
 - `encoder_max_pending`: how many queued clicks to keep after a fast spin (default 4).
 - `encoder_transitions_per_detent`: 2 for this encoder. Use 4 if your encoder needs two clicks per step.
 - `encoder_reverse`: swap the turning direction.
